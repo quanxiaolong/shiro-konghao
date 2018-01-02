@@ -1,84 +1,61 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>cn.com.qxl</groupId>
-  <artifactId>shir-konghao</artifactId>
-  <packaging>war</packaging>
-  <version>1.1.0-SNAPSHOT</version>
-  <name>shir-konghao Maven Webapp</name>
+  <artifactId>shiro-base</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>shiro-base</name>
   <url>http://maven.apache.org</url>
+
   <properties>
-        <shiro.version>1.3.2</shiro.version>
-    </properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<shiro.version>1.3.2</shiro.version>
+  </properties>
+
   <dependencies>
-  		<!-- Logging API + implementation: -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.7.21</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
-            <scope>runtime</scope>
-        </dependency>
-	    <!-- Shiro dependencies: -->
-	    <dependency>
-	        <groupId>org.apache.shiro</groupId>
-	        <artifactId>shiro-core</artifactId>
-	        <version>${shiro.version}</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.apache.shiro</groupId>
-	        <artifactId>shiro-web</artifactId>
-	        <version>${shiro.version}</version>
-	    </dependency>
-	    
-	    <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <version>4.10</version>
+		  <scope>test</scope>
+		</dependency>
+		<!-- Logging API + implementation: -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.21</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.7</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Shiro dependencies: -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>${shiro.version}</version>
+		</dependency>
+		<!-- 数据库连接 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.37</version>
+		</dependency>
   </dependencies>
-  <build>
-	  <plugins>
-	      <plugin>
-	         <groupId>org.apache.maven.plugins</groupId>
-	         <artifactId>maven-compiler-plugin</artifactId>
-	         <version>3.0</version>
-	         <configuration>
-	             <source>1.7</source>
-	             <target>1.7</target>
-	             <encoding>utf-8</encoding>
-	         </configuration>
-	      </plugin>
-	      
-	      <plugin>
-	        <groupId>org.mortbay.jetty</groupId>  
-            <artifactId>jetty-maven-plugin</artifactId>
-            <configuration>  
-                <scanIntervalSecond>10</scanIntervalSecond>  
-                <webApp>  
-                    <contextPath>/shiro</contextPath>  
-                </webApp>  
-                <connectors>  
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">  
-                        <port>8080</port>  
-                        <maxIdleTime>60000</maxIdleTime>  
-                    </connector>  
-                </connectors>  
-            </configuration>
-	      </plugin>
-	  </plugins>
-     
-    <finalName>shir-konghao</finalName>
-  </build>
 </project>
