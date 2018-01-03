@@ -15,6 +15,8 @@
 * 权限配置规则
 
 ```
+规则：“资源标识符：操作：对象实例ID”  即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；“,”表示操作的分割；“*”表示任意资源/操作/实例。
+
 [roles]
 ## classroom-->classroom:*
 r1="user:create,delete","dep:delete,view",classroom
