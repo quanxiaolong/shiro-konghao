@@ -71,4 +71,14 @@ public class TestShiro {
 		System.out.println(subject.isPermitted("admin:user:delete:1"));
 		System.out.println(subject.isPermitted("test:user:view"));
 	}
+	
+	@Test
+	public void testMyPermission(){
+		Subject subject = login("kh","123");
+		System.out.println(subject.isPermitted("+user+delete"));
+		System.out.println(subject.isPermitted("+topic+update"));
+		System.out.println(subject.isPermitted("+topic+delete+2"));
+		System.out.println(subject.isPermitted("test:add"));
+		System.out.println(subject.isPermitted("classroom:add"));
+	}
 }

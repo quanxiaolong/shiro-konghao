@@ -1,26 +1,28 @@
-# dev4第四个视频
-# 联系内容
-* 授权
-* 角色配置规则
+# 第5个视频
 
+# 练习内容
+* 权限一个或多Realm
+* 权限解析器 WildcardPermissionResolver 
+* 权限对象 WildcardPermission／Permission 判断方法implies
+* 自定义权限／权限解析器
+* 配置自定义权限解析器
 ```
-规则：“用户名=密码，角色1，角色2”“角色=权限1，权限2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro同样不进行权限的维护，需要我们通过Realm返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
-```
-* 角色检测 hasrole和checkrole的区别
 
+myPermissionResolver = cn.com.qxl.shiro.permission.MyPermissionResolver
+securityManager.authorizer.permissionResolver =$myPermissionResolver
 ```
-  checkrole若不包含角色会抛出异常，而hasrole则返回false
+* 自定义角色解析器
+* 配置自定义角色解析器
+```
 
+myRolePermisssionResolver=cn.com.qxl.shiro.permission.MyRolePermissionResolver
+securityManager.authorizer.rolePermissionResolver = $myRolePermisssionResolver
 ```
-* 权限配置规则
-
-```
-规则：“资源标识符：操作：对象实例ID”  即对哪个资源的哪个实例可以进行什么操作。其默认支持通配符权限字符串，“:”表示资源/操作/实例的分割；“,”表示操作的分割；“*”表示任意资源/操作/实例。
-
-[roles]
-## classroom-->classroom:*
-r1="user:create,delete","dep:delete,view",classroom
-r2=topic:*
-r3=admin:user:*,*:view,*:*:view
-```
-*权限检测 haspermission与checkpermission 区别
+# 总结
+* 通过ModularRealmAuthorizer 管理realm为每个realm 
+* ModularRealmAuthorizer为每个realm 分配权限解析器 applyPermissionResolverToRealms()分配PermissionResolver 
+* ModularRealmAuthorizer为每个realm 分配角色权限解析器 applyRolePermissionResolverToRealms()分配RolePermissionResolver 
+* 每个realm通过doGetAuthorizationInfo为用户分配权限
+* 当subject调用ispermissoin时，遍历所有的realm.
+* 通过权限解析器WildcardPermissionResolver 对传入的权限字符串生成权限对象Permission
+* 遍历realm中的权限 通过权限对象WildcardPermission的implies方法 验证权限
