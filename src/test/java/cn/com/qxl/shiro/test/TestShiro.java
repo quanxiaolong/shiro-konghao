@@ -1,5 +1,7 @@
 package cn.com.qxl.shiro.test;
 
+import java.util.Arrays;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -12,27 +14,61 @@ import org.apache.shiro.util.Factory;
 import org.junit.Test;
 
 public class TestShiro {
-
-	@Test
-	public void testBase(){
+	
+	private Subject login(String username,String password){
 		Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
 		SecurityManager manager = factory.getInstance();
 		SecurityUtils.setSecurityManager(manager);
 		
 		Subject subject = SecurityUtils.getSubject();
 		
-		UsernamePasswordToken token = new UsernamePasswordToken("kh", "123");
+		UsernamePasswordToken token = new UsernamePasswordToken(username,password);
 		
 		try {
 			subject.login(token);
-			PrincipalCollection ps =subject.getPrincipals();
-			System.out.println(ps.asList());
-			System.out.println(ps.getRealmNames());
-			System.out.println(subject.getPrincipal());
+			return subject;
 		} catch (UnknownAccountException e) {
 			System.out.println("用户名不存在");
 		}catch(IncorrectCredentialsException e){
 			System.out.println("用户密码不存在");
 		}
+		return null;
+	}
+
+	@Test
+	public void testBase(){
+		
+		Subject subject= login("kh","123");
+		PrincipalCollection ps =subject.getPrincipals();
+		System.out.println(ps.asList());
+		System.out.println(ps.getRealmNames());
+		System.out.println(subject.getPrincipal());
+	}
+	
+	@Test
+	public void testRole(){
+		Subject subject = login("kh","123");
+		System.out.println(subject.hasRole("r1"));
+		System.out.println(subject.hasAllRoles(Arrays.asList("r1","r2","r3")));
+		System.out.println(subject.hasRoles(Arrays.asList("r1","r2","r3"))[0]);
+		System.out.println(subject.hasRoles(Arrays.asList("r1","r2","r3"))[2]);
+		subject.checkRole("r3");
+	}
+	
+	@Test
+	public void testPermission1(){
+		
+		Subject subject = login("kh","123");
+		System.out.println(subject.isPermitted("user:delete"));
+		System.out.println(subject.isPermitted("topic:create"));
+		System.out.println(subject.isPermitted("dep:delete"));
+		System.out.println(subject.isPermitted("classroom:create"));
+	}
+	@Test
+	public void testPermission2(){
+		
+		Subject subject = login("lisi","123");
+		System.out.println(subject.isPermitted("admin:user:delete:1"));
+		System.out.println(subject.isPermitted("test:user:view"));
 	}
 }

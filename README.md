@@ -1,12 +1,24 @@
-# dev3 第三个视频教程 不需要merge 到 master
-# 视频3练习了解内容
-* 可以自定义realm
-* 可配多个realm
-* 多个realm 可实现多数据源，多授权（通过多Principal）
-* 多个realm之间的认证关系由认证策略控制（AuthenticationStrategy）
+# dev4第四个视频
+# 联系内容
+* 授权
+* 角色配置规则
+
 ```
-authcStrategy = org.apache.shiro.authc.pam.FirstSuccessfulStrategy
-securityManager.authenticator.authenticationStrategy = $authcStrategy
+规则：“用户名=密码，角色1，角色2”“角色=权限1，权限2”，即首先根据用户名找到角色，然后根据角色再找到权限；即角色是权限集合；Shiro同样不进行权限的维护，需要我们通过Realm返回相应的权限信息。只需要维护“用户——角色”之间的关系即可。
 ```
-* 认证和授权都是在Realm中实现doGetAuthorizationInfo／doGetAuthorizationInfo
-* realm名称 如果没有配置setName 则会是配置文件重的变量名
+* 角色检测 hasrole和checkrole的区别
+
+```
+  checkrole若不包含角色会抛出异常，而hasrole则返回false
+
+```
+* 权限配置规则
+
+```
+[roles]
+## classroom-->classroom:*
+r1="user:create,delete","dep:delete,view",classroom
+r2=topic:*
+r3=admin:user:*,*:view,*:*:view
+```
+*权限检测 haspermission与checkpermission 区别
