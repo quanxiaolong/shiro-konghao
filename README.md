@@ -1,5 +1,5 @@
 # 第5个视频
-
+* 授权的完整流程和实现
 # 练习内容
 * 权限一个或多Realm
 * 权限解析器 WildcardPermissionResolver 
