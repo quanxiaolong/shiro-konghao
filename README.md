@@ -11,6 +11,7 @@
 2. http://localhost:8080/shiro/login.html
 3. http://localhost:8080/shiro/logout.html
 ```
+* 附加数据库表结构以及测试数据 与孔浩老师表结构不同 不影响测试SHIRO_TEST.sql 
 # 练习内容
 * 初始搭建项目环境
 * 密码加盐匹配操作
