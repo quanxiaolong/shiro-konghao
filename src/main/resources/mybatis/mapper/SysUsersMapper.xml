@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.qxl.shiro.dao.IUserDao" >
+  <resultMap id="BaseResultMap" type="cn.com.qxl.shiro.model.SysUsers" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+    <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+    <result column="SALT" property="salt" jdbcType="VARCHAR" />
+    <result column="LOCKED" property="locked" jdbcType="BIT" />
+  </resultMap>
+  
+  <!-- =============变量区域=============== -->
+  
+  <!-- 表名 -->
+  <sql id="tableName" >
+    SYS_USERS
+  </sql>
+  
+  <!-- 主键 -->
+  <sql id="pk" >
+    ID
+  </sql>
+  
+  <!-- 数据表列名 -->
+  <sql id="Base_Column_List" >
+    ID, 	
+    USERNAME, 	
+    PASSWORD, 	
+    SALT, 	
+    LOCKED	
+  </sql>
+  
+  <!-- 更新字段 -->
+  <sql id="updateFields" >
+    <if test="updateField.listField.contains('USERNAME')" >
+      USERNAME = #{model.username,jdbcType=VARCHAR},
+    </if>
+    <if test="updateField.listField.contains('PASSWORD')" >
+      PASSWORD = #{model.password,jdbcType=VARCHAR},
+    </if>
+    <if test="updateField.listField.contains('SALT')" >
+      SALT = #{model.salt,jdbcType=VARCHAR},
+    </if>
+    <if test="updateField.listField.contains('LOCKED')" >
+      LOCKED = #{model.locked,jdbcType=BIT}
+    </if>
+  </sql>
+  
+  <!-- 插入字段键 -->
+  <sql id="insertKeys" >
+    (
+    	<include refid='Base_Column_List'/>
+    )
+  </sql>
+  
+  <!-- 插入字段值 -->
+  <sql id="insertValues" >
+    (
+    	#{model.id,jdbcType=BIGINT},
+    	#{model.username,jdbcType=VARCHAR},
+    	#{model.password,jdbcType=VARCHAR},
+    	#{model.salt,jdbcType=VARCHAR},
+    	#{model.locked,jdbcType=BIT}
+    )
+  </sql>
+  
+  <!-- =============查询区域=============== -->
+  
+  <select id="searchById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	SELECT 
+  			<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	WHERE
+  		<include refid="pk" /> = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="searchWithBatch" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	WHERE 
+  	<include refid="pk" /> IN
+  	<foreach collection="ids" item="id" open="(" close=")" separator=",">
+  		#{id,jdbcType=BIGINT}
+  	</foreach>
+  </select>
+  
+  <select id="searchCount" resultType="java.lang.Integer" parameterType="DynamicCondition">
+  	SELECT 
+  		COUNT(*)
+  	FROM 
+  		<include refid="tableName" />
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </select>
+  
+  <select id="search" resultMap="BaseResultMap" parameterType="DynamicCondition">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </select>
+  
+  <select id="searchOne" resultMap="BaseResultMap" parameterType="DynamicCondition">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </select>
+  
+  <select id="page" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </select>
+  
+  <!-- =============插入区域=============== -->
+  
+  <insert id="insert" keyProperty="model.id" useGeneratedKeys="true">
+  	INSERT INTO 
+  	<include refid="tableName" /> 
+  	<include refid="insertKeys" />
+  	VALUES 
+  	<include refid="insertValues"/>
+  </insert>
+  
+  <insert id="insertWithBatch">
+  	INSERT INTO 
+  	<include refid="tableName" />	
+  	<include refid="insertKeys" />
+  	VALUES
+  	<foreach collection="models" item="model" index="index" separator=",">
+  		<if test="models[index] != null">
+  			<include refid="insertValues"/>
+  		</if>
+  	</foreach>
+  </insert>
+  
+  <!-- =============更新区域=============== -->
+  
+  <update id="update">
+  	UPDATE
+  	<include refid="tableName" />
+  	<set>
+  		<include refid="updateFields"/>
+  	</set>
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </update>
+  
+  <update id="updateWithBatch">
+  	<foreach collection="models" item="model" index="index" separator=";"> 
+  		UPDATE
+  		<include refid="tableName" />
+  		<set>
+  			<include refid="updateFields"/>
+  		</set>
+  		WHERE
+  			<include refid="pk" /> = #{model.id,jdbcType=BIGINT}
+  	</foreach>
+  </update>
+  
+  <!-- =============删除区域=============== -->
+  
+  <delete id="delete" parameterType="DynamicCondition">
+  	DELETE FROM 
+  		<include refid="tableName" />
+  	<include refid="database.operate.api.common.mapper.base_condition" />
+  </delete>
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+  	DELETE FROM 
+  		<include refid="tableName" />
+  	WHERE 
+  		<include refid="pk" /> = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <select id="listUser"  resultMap="BaseResultMap" >
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  </select>
+  
+  <select id="loadByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	SELECT 
+  			<include refid="Base_Column_List" />
+  	FROM 
+  		<include refid="tableName" />
+  	WHERE USERNAME= #{userName,jdbcType=VARCHAR}
+  </select>
+ 
+  <select id="listByRole" resultMap="BaseResultMap" parameterType="java.lang.Long">
+  	SELECT
+  		<include refid="rbac.fUser"/>
+  	FROM <include refid="rbac.tbUser"/> u join <include refid="rbac.tbUserRole"/> ur on  u.ID = ur.USER_ID join  <include refid="rbac.tbRole"/> r on ur.ROLE_ID = r.ID and r.ID=#{roleId,jdbcType=BIGINT}
+  </select>
+  <select id="listAllResource" resultMap="rbac.mapPerm">
+  	SELECT
+  		<include refid="rbac.fPerm"/>
+  	FROM <include refid="rbac.tbUser"/> u join <include refid="rbac.tbUserRole" /> ur on u.ID=ur.USER_ID and u.ID =#{userId,jdbcType=BIGINT} join <include refid="rbac.tbRolePerm"/> rp on ur.ROLE_ID=rp.ROLE_ID join <include refid="rbac.tbPerm"/> p on rp.PERMISSION_ID=p.ID
+  </select>
+</mapper>
