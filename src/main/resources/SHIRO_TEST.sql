@@ -11,7 +11,7 @@
  Target Server Version : 50720
  File Encoding         : utf-8
 
- Date: 01/10/2018 00:06:00 AM
+ Date: 01/10/2018 15:09:20 PM
 */
 
 SET NAMES utf8;
@@ -29,13 +29,13 @@ CREATE TABLE `SYS_PERMISSIONS` (
   `AVAILABLE` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `IDX_SYS_PERMISSIONS_PERMISSION` (`PERMISSION`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 --  Records of `SYS_PERMISSIONS`
 -- ----------------------------
 BEGIN;
-INSERT INTO `SYS_PERMISSIONS` VALUES ('1', 'USER:CREATE', null, '用户模块新增', '1'), ('2', 'USER:UPDATE', null, '用户模块修改', '1'), ('3', 'MENU:CREATE', null, '菜单模块新增', '1');
+INSERT INTO `SYS_PERMISSIONS` VALUES ('1', 'USER:CREATE', '/USER/CREATE', '用户模块新增', '1'), ('2', 'USER:UPDATE', '/USER/UPDATE', '用户模块修改', '1'), ('3', 'MENU:*', '/MENU/*', '菜单模块新增', '1'), ('4', 'ADMIN:*', '/admin/**', '管理员', '1'), ('5', 'USER:*', '/user/**', '用户模块', '1');
 COMMIT;
 
 -- ----------------------------
@@ -71,7 +71,7 @@ CREATE TABLE `SYS_ROLES_PERMISSIONS` (
 --  Records of `SYS_ROLES_PERMISSIONS`
 -- ----------------------------
 BEGIN;
-INSERT INTO `SYS_ROLES_PERMISSIONS` VALUES ('1', '1'), ('1', '2'), ('2', '1');
+INSERT INTO `SYS_ROLES_PERMISSIONS` VALUES ('1', '1'), ('1', '2'), ('2', '1'), ('1', '4'), ('1', '5');
 COMMIT;
 
 -- ----------------------------
