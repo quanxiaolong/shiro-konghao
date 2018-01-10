@@ -1,5 +1,4 @@
 # 第10视频
-链接: https://pan.baidu.com/s/1pMffXUj 密码: x7dg
 * 基于过滤器链的授权操作流程
 # 说明
 * 孔浩老师搭建此此练习项目采用的是Spring+hibernate实现
