@@ -19,7 +19,7 @@
 	
 	
 	<!-- 开启注解 -->
-	<context:component-scan base-package="cn.com.qxl.shiro.**" />
+	<context:component-scan base-package="cn.com.qxl.shiro.controller" />
 	<context:annotation-config />
 	<mvc:annotation-driven conversion-service="conversionService"
 						   content-negotiation-manager="contentNegotiationManager">
@@ -95,8 +95,8 @@
 	</bean>
 	
 	<!-- shiro 注解 -->
-	<!-- <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
 	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
 		<property name="securityManager" ref="securityManager"/>
-	</bean> -->
+	</bean>
 </beans>

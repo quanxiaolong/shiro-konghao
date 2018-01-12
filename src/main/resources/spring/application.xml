@@ -10,11 +10,8 @@ http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- 引入属性文件 -->
 	<context:property-placeholder location="classpath:/properties/*.properties" />
-	
-	
+
 	<!-- 开启注解 -->
-	<context:component-scan base-package="cn.com.qxl.shiro.**" />
+	<context:component-scan base-package="cn.com.qxl.shiro"/>
 	<context:annotation-config />
-
-
 </beans>
