@@ -14,7 +14,8 @@
 * 附加数据库表结构以及测试数据 与孔浩老师表结构不同 不影响测试SHIRO_TEST.sql 
 # 说明
 ```
-1. 视频中孔浩老师测试的shiro注解 @@RequiresRoles("ADMIN") 应该是有问题的。访问地址设置为 http://localhost:8080/shiro/admin/t1.html 其中起校验作用的并不是注解RequiresRoles 。二是在shiro-beans.xml中配置的
+1. 视频中孔浩老师测试的shiro注解 @@RequiresRoles("ADMIN") 应该是有问题的。
+访问地址设置为 http://localhost:8080/shiro/admin/t1.html 其中起校验作用的并不是注解RequiresRoles 。而是在shiro-beans.xml中配置的
 		<property name="filterChainDefinitions">
 			<value>
 				/admin/**=authc,resourceCheckFilter
