@@ -12,6 +12,24 @@
 4. http://localhost:8080/shiro/t1.html
 ```
 * 附加数据库表结构以及测试数据 与孔浩老师表结构不同 不影响测试SHIRO_TEST.sql 
+# 说明
+```
+1. 视频中孔浩老师测试的shiro注解 @@RequiresRoles("ADMIN") 应该是有问题的。访问地址设置为 http://localhost:8080/shiro/admin/t1.html 其中起校验作用的并不是注解RequiresRoles 。二是在shiro-beans.xml中配置的
+		<property name="filterChainDefinitions">
+			<value>
+				/admin/**=authc,resourceCheckFilter
+				/login.html=anon
+				/logout.html=logout
+			</value>
+		</property>
+因为 删除RequiresRoles注解 。同样还是会有认证和权限校验。
+2. 视频中起初hello/t1.html没有成功是因为注解校验 配置的位置不对 应该配置到 lifecycleBeanPostProcessor之后
+<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+    <property name="securityManager" ref="securityManager"/>
+</bean>
+
+```
 # 练习内容
 * 认证和授权最外层 都是通过Filter拦截的
 * 讲解认证流程
