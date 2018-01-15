@@ -12,8 +12,10 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cache.Cache;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.web.context.ContextLoader;
@@ -30,6 +32,7 @@ public class UserRealm extends AuthorizingRealm {
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection printcipals) {
 		SysUsers user = (SysUsers)printcipals.getPrimaryPrincipal();
 		Long userId = user.getId();
+		System.out.println("用户权限获取：输出用户信息");
 		System.out.println(user.getId()+user.getUsername());
 		IUserService userService = (IUserService)ContextLoader.getCurrentWebApplicationContext().getBean("userService");
 		//IRoleService roleService = (IRoleService)ContextLoader.getCurrentWebApplicationContext().getBean("roleService");
@@ -55,5 +58,29 @@ public class UserRealm extends AuthorizingRealm {
 		info.setCredentialsSalt(ByteSource.Util.bytes(username));
 		return info;
 	}
+
+	@Override
+	protected void clearCachedAuthorizationInfo(PrincipalCollection principals) {
+		System.out.println("清除授权缓存");
+		Cache<Object, AuthorizationInfo> c = this.getAuthorizationCache();
+		for(Object key: c.keys()){
+			System.out.println("授权缓存："+key+" ---------- "+c.get(key)+"---------");
+		}
+		super.clearCachedAuthorizationInfo(principals);
+	}
+
+	@Override
+	protected void clearCachedAuthenticationInfo(PrincipalCollection principals) {
+		System.out.println("清除认证缓存");
+		Cache<Object, AuthenticationInfo> c = this.getAuthenticationCache();
+		for(Object key: c.keys()){
+			System.out.println("认证缓存："+key+" ----------- "+c.get(key)+"---------");
+		}
+		SysUsers user = ((SysUsers)principals.getPrimaryPrincipal());
+		SimplePrincipalCollection spc = new SimplePrincipalCollection(user.getUsername(), this.getName());
+		super.clearCachedAuthenticationInfo(spc);
+	}
+	
+	
 
 }

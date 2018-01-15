@@ -1,5 +1,5 @@
 # 第13视频
-* 和Spring项目整合
+* shiro加入ehcache缓存
 # 说明
 * 孔浩老师搭建此此练习项目采用的是Spring+hibernate实现
 * 因为目前公司采用Mybatis 我搭建这个例子采用的Spring+SpringMvc+Mybatis实现
@@ -14,53 +14,61 @@
 * 附加数据库表结构以及测试数据 与孔浩老师表结构不同 不影响测试SHIRO_TEST.sql 
 # 说明
 ```
-1. 视频中孔浩老师测试的shiro注解 @@RequiresRoles("ADMIN") 应该是有问题的。
-访问地址设置为 http://localhost:8080/shiro/admin/t1.html 其中起校验作用的并不是注解RequiresRoles 。而是在shiro-beans.xml中配置的
-		<property name="filterChainDefinitions">
-			<value>
-				/admin/**=authc,resourceCheckFilter
-				/login.html=anon
-				/logout.html=logout
-			</value>
-		</property>
-因为 删除RequiresRoles注解 。同样还是会有认证和权限校验。
-2. 视频中起初hello/t1.html没有成功是因为注解校验 配置的位置不对 应该配置到 lifecycleBeanPostProcessor之后
-<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
-    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-    <property name="securityManager" ref="securityManager"/>
-</bean>
+
+# 练习内容
+* 启用Ehcache缓存。
+* 实现认证和授权缓存。
+* 分析认证和授权缓存流程
+* 分析logout退出时清除缓存流程。
+
+# 总结
+## 认证和授权缓存流程
+* shiro 提供cachemanager 但都只是接口 ，需要提供具体的实现。
+* ehcache 首先要提供一个配置文件。
+* 定义缓存管理器
 
 ```
-# 练习内容
-* 认证和授权最外层 都是通过Filter拦截的
-* 讲解认证流程
+<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager"></bean>
 ```
-1. [urls]中配置需要认证访问的页面地址以及验证过滤器。／admin/**=authc
-2. authc Filter 通过isAccessAllowed（）判断当前用户未登录。
-3. 调用subject.isAuthenticated()true返回
-4. false则通过Filter.onAccessDenied重定向到登陆页。
-4. 用户调用login服务，subject.login.
-5. 调用Realm的doGetAuthenticationInfo获取用户信息。
-6. 若获取到用户信息 还会调用credentialsMatcher（如HashedCredentialsMatcher）进行密码认证匹配
-7. AuthenticatingRealm中的credentialsMatcher.doCredentialsMatch进行认证功能。
-8. 调用相应的加密算法进行密码比较认证 如PasswordService／SimpleHash等等
+
+* securityManager 配置缓存管理器 
 ```
-* 讲解授权流程
+1. 所有实现CacheManagerAware的Realm会自动设置上CacheManager（官网A皮）
+2.代码
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="userRealm"/>
+		<property name="authorizer.permissionResolver" ref="urlPermissionResolver"/>
+		<property name="cacheManager" ref="cacheManager"/>
+	</bean>
 ```
-1. [urls]中配置需要权限的访问的页面以及验证过滤器。／admin/**=roles[admin]
-2. roles Filter 通过isAccessAllowed判断当前用户是否有权访问当前页面
-3. 调用subject.isPermitted.
-4. 调用Realm 中doGetAuthorizationInfo获取用户权限信息。
-5. ModularRealmAuthorizer为每个Realm中分配一个权限解析器PermissionResolver和角色权限解析器RolePermissionResolver，用来生成相应的Permission权限对象。
-6. 通过Permission的implies方法 判断是否具有该页面的访问权限。
-7. 若最终Filter的isAccessAllowed()返回false则调用Filter的onAccessDenied（）重定向到未授权页面
+* Realm中开启缓存并设置缓存器名称在AuthorizingRealm和AuthenticatingRealm分别有配置是否开启认证和授权缓存以及认证和授权缓存器的名称
 ```
-* 与Spring的整合实质上就是将shiro.ini中的东西 配置到XML中交给Spring来管理
-* shiro注解 例如@RequiresRoles, @RequiresPermissions 需要配置在lifecycleBeanPostProcessor之后 且在Controller扫描的XML之后
+1. realm的继承关系 AuthorizingRealm->AuthenticatingRealm->CachingRealm
+2. 开启认证缓存和权限缓存
+1. AuthorizingRealm属性authorizationCachingEnabled和authorizationCacheName
+2. AuthenticatingRealm属性authenticationCachingEnabled和authenticationCacheName
+3. CachingRealm 属性 cachingEnabled 开启缓存
+4. 代码
+	<bean id="userRealm" class="cn.com.qxl.shiro.realm.UserRealm">
+		<property name="credentialsMatcher" ref="hashMatcher"/>
+		<property name="cachingEnabled" value="true"></property>
+		<property name="authenticationCachingEnabled" value="true"></property>
+		<property name="authenticationCacheName" value="shiro-authenticationCache"></property>
+		<property name="authorizationCachingEnabled" value="true"/>
+		<property name="authorizationCacheName" value="shiro-authorizationCache"></property>
+	</bean>
 ```
-<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>
-    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-    <property name="securityManager" ref="securityManager"/>
-</bean>
+## 清除缓存流程
+* logout Filter中调用subject.logout();
+* 调用SecurityManager的securityManager.logout(this)
+* 调用Authenticator——>ModularRealmAuthenticator的onLogou()
+* 调用ModularRealmAuthenticator 管理的所有Realm中每个实现LogoutAware的Realm的((LogoutAware) realm).onLogout(principals);
+* 权限AuthorizingRealm和认证AuthenticatingRealm都实现LogoutAware
+* AuthorizingRealm中的clearCachedAuthorizationInfo实现授权信息清除
+* AuthenticatingRealm的clearCachedAuthenticationInfo实现认证信息清除
+* 特殊说明
 ```
-# 总结
+1. AuthorizingRealm以PrincipalCollection为Key缓存的权限信息。
+2. AuthenticatingRealm1以用户名为Key缓存的认证信息。
+3. 清除时都是按PrincipalCollection为key进行清除的
+```
